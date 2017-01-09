@@ -2,6 +2,9 @@ import * as React from 'react'
 import { Container, ContainerListItem } from './containerListItem'
 import { ContainerList } from './containerList'
 import * as _ from 'lodash'
+import * as io from 'socket.io-client'
+
+let socket = io.connect()
 
 class AppState {
     containers?: Container[]
@@ -10,32 +13,39 @@ class AppState {
 
 export class AppComponent extends React.Component<{}, AppState> {
 
-    containers: Container[] = [
-        {
-            id: '1',
-            name: 'test container',
-            image: 'some image',
-            state: 'running',
-            status: 'Running'
-        },
-        {
-            id: '2',
-            name: 'another test container',
-            image: 'some image',
-            state: 'stopped',
-            status: 'Running'
-        }
-    ]
-
     constructor() {
         super()
-
-        const partitioned = _.partition(this.containers, c => c.state == 'running')
-
         this.state = {
-            containers: partitioned[0],
-            stoppedContainers: partitioned[1]
+            containers: [],
+            stoppedContainers: []
         }
+
+        socket.on('containers.list', (containers: any) => {
+
+            const partitioned = _.partition(containers, (c: any) => c.State == "running")
+
+            this.setState({
+                containers: partitioned[0].map(this.mapContainer),
+                stoppedContainers: partitioned[1].map(this.mapContainer)
+            })
+        })
+    }
+
+    mapContainer(container:any): Container {
+        return {
+            id: container.Id,
+            name: _.chain(container.Names)
+                .map((n: string) => n.substr(1))
+                .join(", ")
+                .value(),
+            state: container.State,
+            status: `${container.State} (${container.Status})`,
+            image: container.Image
+        }
+    }
+
+    componentDidMount() {
+        socket.emit('containers.list')
     }
 
     render() {

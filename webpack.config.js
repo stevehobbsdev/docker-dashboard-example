@@ -19,9 +19,5 @@ module.exports = {
         preLoaders: [
             { test: /\.js$/, loader: "source-map-loader" }
         ]
-    },
-
-    externals: {
-        "socket.io-client": "io"
     }
 };
