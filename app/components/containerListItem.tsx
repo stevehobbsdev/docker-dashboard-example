@@ -1,5 +1,8 @@
 import * as React from 'react'
 import * as classNames from 'classnames'
+import * as io from 'socket.io-client'
+
+const socket = io.connect()
 
 export interface Container {
     id: string
@@ -13,6 +16,7 @@ export class ContainerListItem extends React.Component<Container, {}> {
 
     onActionButtonClick() {
         const evt = this.isRunning() ? 'container.stop' : 'container.start'
+        socket.emit(evt, { id: this.props.id })
     }
 
     isRunning() {

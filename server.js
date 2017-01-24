@@ -17,8 +17,6 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')))
 // Start the server
 server.listen(port, () => console.log(`Server started on port ${port}`))
 
-docker.listContainers((err, containers) => console.log(containers))
-
 function refreshContainers() {
     docker.listContainers({ all: true}, (err, containers) => {
         io.emit('containers.list', containers)
@@ -29,6 +27,14 @@ io.on('connection', socket => {
 
     socket.on('containers.list', () => {
         refreshContainers()
+    })
+
+    socket.on('container.start', args => {
+        const container = docker.getContainer(args.id)
+
+        if (container) {
+            container.start((err, data) => refreshContainers())
+        }
     })
 
 })
