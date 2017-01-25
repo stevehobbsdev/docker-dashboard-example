@@ -37,4 +37,12 @@ io.on('connection', socket => {
         }
     })
 
+    socket.on('container.stop', args => {
+        const container = docker.getContainer(args.id)
+
+        if (container) {
+            container.stop((err, data) => refreshContainers())
+        }
+    })
+
 })
