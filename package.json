@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"nodemon script.js\" \"webpack --watch\""
+    "start": "concurrently \"nodemon server.js\" \"webpack --watch\""
   },
   "author": "",
   "license": "ISC",
