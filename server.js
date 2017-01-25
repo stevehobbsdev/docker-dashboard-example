@@ -23,6 +23,8 @@ function refreshContainers() {
     })
 }
 
+setInterval(refreshContainers, 2000)
+
 io.on('connection', socket => {
 
     socket.on('containers.list', () => {
