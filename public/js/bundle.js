@@ -21478,6 +21478,8 @@
 	var containerList_1 = __webpack_require__(179);
 	var _ = __webpack_require__(236);
 	var io = __webpack_require__(182);
+	var newContainerModal_1 = __webpack_require__(237);
+	var dialogTrigger_1 = __webpack_require__(239);
 	var socket = io.connect();
 	var AppState = (function () {
 	    function AppState() {
@@ -21499,6 +21501,9 @@
 	                stoppedContainers: partitioned[1].map(_this.mapContainer)
 	            });
 	        });
+	        socket.on('image.error', function (args) {
+	            alert(args.message.json.message);
+	        });
 	        return _this;
 	    }
 	    AppComponent.prototype.mapContainer = function (container) {
@@ -21516,11 +21521,16 @@
 	    AppComponent.prototype.componentDidMount = function () {
 	        socket.emit('containers.list');
 	    };
+	    AppComponent.prototype.onRunImage = function (name) {
+	        socket.emit('image.run', { name: name });
+	    };
 	    AppComponent.prototype.render = function () {
 	        return (React.createElement("div", { className: "container" },
 	            React.createElement("h1", { className: "page-header" }, "Docker Dashboard"),
+	            React.createElement(dialogTrigger_1.DialogTrigger, { id: "newContainerModal", buttonText: "New container" }),
 	            React.createElement(containerList_1.ContainerList, { title: "Running", containers: this.state.containers }),
-	            React.createElement(containerList_1.ContainerList, { title: "Stopped containers", containers: this.state.stoppedContainers })));
+	            React.createElement(containerList_1.ContainerList, { title: "Stopped containers", containers: this.state.stoppedContainers }),
+	            React.createElement(newContainerModal_1.NewContainerDialog, { id: "newContainerModal", onRunImage: this.onRunImage.bind(this) })));
 	    };
 	    return AppComponent;
 	}(React.Component));
@@ -47447,6 +47457,125 @@
 	}.call(this));
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(193)(module)))
+
+/***/ },
+/* 237 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var modal_1 = __webpack_require__(238);
+	var classNames = __webpack_require__(181);
+	var NewContainerDialog = (function (_super) {
+	    __extends(NewContainerDialog, _super);
+	    function NewContainerDialog(props) {
+	        var _this = _super.call(this, props) || this;
+	        _this.state = {
+	            imageName: '',
+	            isValid: false
+	        };
+	        return _this;
+	    }
+	    NewContainerDialog.prototype.onImageNameChange = function (e) {
+	        var name = e.target.value;
+	        this.setState({
+	            imageName: name,
+	            isValid: name.length > 0
+	        });
+	    };
+	    NewContainerDialog.prototype.runImage = function () {
+	        if (this.state.isValid && this.props.onRunImage)
+	            this.props.onRunImage(this.state.imageName);
+	        return this.state.isValid;
+	    };
+	    NewContainerDialog.prototype.render = function () {
+	        var inputClass = classNames({
+	            "form-group": true,
+	            "has-error": !this.state.isValid
+	        });
+	        return (React.createElement(modal_1.default, { id: "newContainerModal", buttonText: "Run", title: "Create a new container", onButtonClicked: this.runImage.bind(this) },
+	            React.createElement("form", { className: "form-horizontal" },
+	                React.createElement("div", { className: inputClass },
+	                    React.createElement("label", { htmlFor: "imageName", className: "col-sm-3 control-label" }, "Image name"),
+	                    React.createElement("div", { className: "col-sm-9" },
+	                        React.createElement("input", { type: "text", className: "form-control", onChange: this.onImageNameChange.bind(this), id: "imageName", placeholder: "e.g mongodb:latest" }))))));
+	    };
+	    return NewContainerDialog;
+	}(React.Component));
+	exports.NewContainerDialog = NewContainerDialog;
+
+
+/***/ },
+/* 238 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var Modal = (function (_super) {
+	    __extends(Modal, _super);
+	    function Modal(props) {
+	        var _this = _super.call(this, props) || this;
+	        _this.modalElementId = "#" + _this.props.id;
+	        return _this;
+	    }
+	    Modal.prototype.onPrimaryButtonClick = function () {
+	        if (this.props.onButtonClicked) {
+	            if (this.props.onButtonClicked() !== false) {
+	                $(this.modalElementId).modal('hide');
+	            }
+	        }
+	    };
+	    Modal.prototype.render = function () {
+	        return (React.createElement("div", { className: "modal fade", id: this.props.id },
+	            React.createElement("div", { className: "modal-dialog" },
+	                React.createElement("div", { className: "modal-content" },
+	                    React.createElement("div", { className: "modal-header" },
+	                        React.createElement("button", { type: "button", className: "close", "data-dismiss": "modal", "aria-hidden": "true" }, "\u00D7"),
+	                        React.createElement("h4", { className: "modal-title" }, this.props.title)),
+	                    React.createElement("div", { className: "modal-body" }, this.props.children),
+	                    React.createElement("div", { className: "modal-footer" },
+	                        React.createElement("button", { type: "button", onClick: this.onPrimaryButtonClick.bind(this), className: "btn btn-primary" }, this.props.buttonText || "Ok"))))));
+	    };
+	    return Modal;
+	}(React.Component));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Modal;
+
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var DialogTrigger = (function (_super) {
+	    __extends(DialogTrigger, _super);
+	    function DialogTrigger() {
+	        return _super !== null && _super.apply(this, arguments) || this;
+	    }
+	    DialogTrigger.prototype.render = function () {
+	        var href = "#" + this.props.id;
+	        return (React.createElement("a", { className: "btn btn-primary", "data-toggle": "modal", href: href }, this.props.buttonText));
+	    };
+	    return DialogTrigger;
+	}(React.Component));
+	exports.DialogTrigger = DialogTrigger;
+
 
 /***/ }
 /******/ ]);

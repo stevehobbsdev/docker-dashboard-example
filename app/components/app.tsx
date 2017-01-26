@@ -3,6 +3,8 @@ import { Container, ContainerListItem } from './containerListItem'
 import { ContainerList } from './containerList'
 import * as _ from 'lodash'
 import * as io from 'socket.io-client'
+import { NewContainerDialog } from './newContainerModal'
+import { DialogTrigger } from './dialogTrigger'
 
 let socket = io.connect()
 
@@ -29,6 +31,10 @@ export class AppComponent extends React.Component<{}, AppState> {
                 stoppedContainers: partitioned[1].map(this.mapContainer)
             })
         })
+
+        socket.on('image.error', (args: any) => {
+            alert(args.message.json.message)
+        })
     }
 
     mapContainer(container:any): Container {
@@ -48,13 +54,19 @@ export class AppComponent extends React.Component<{}, AppState> {
         socket.emit('containers.list')
     }
 
+    onRunImage(name: String) {
+        socket.emit('image.run', { name: name })
+    }
+
     render() {
         return (
             <div className="container">
                 <h1 className="page-header">Docker Dashboard</h1>
-                
+                <DialogTrigger id="newContainerModal" buttonText="New container" />
+
                 <ContainerList title="Running" containers={this.state.containers} />
                 <ContainerList title="Stopped containers" containers={this.state.stoppedContainers} />
+                <NewContainerDialog id="newContainerModal" onRunImage={this.onRunImage.bind(this)} />
             </div>
         )
     }
