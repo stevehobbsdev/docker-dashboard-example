@@ -25,6 +25,10 @@ npm install
 npm link typescript
 ```
 
+The sample interacts with Docker, so having the [native Docker tools](https://www.docker.com/) for your OS is required for the sample to be of any use. If you're looking for an image to play around with for the sample, feel free to use `elkdanger/express-app`:
+
+`docker pull elkdanger/express-app`
+
 ## Running the sample
 
 ```
