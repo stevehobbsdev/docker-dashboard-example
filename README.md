@@ -6,7 +6,7 @@ This is the code repository for the "Create a Docker dashboard with Typescript, 
 
 **Node 6.x**
 
-**Webpack**
+**Webpack 2**
 
 ```
 npm install -g webpack
