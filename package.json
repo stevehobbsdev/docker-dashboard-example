@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"nodemon server.js\" \"webpack --watch\""
+    "start": "webpack -p && node server.js",
+    "start-dev": "./node_modules/.bin/concurrently 'nodemon server.js' 'webpack --watch'"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +27,8 @@
     "@types/react-dom": "^0.14.20",
     "@types/socket.io": "^1.4.27",
     "@types/socket.io-client": "^1.4.29",
+    "concurrently": "^3.4.0",
+    "nodemon": "^1.11.0",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^1.3.3"
   }
