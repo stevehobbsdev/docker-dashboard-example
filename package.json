@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --progress && node server.js",
+    "start": "webpack serve && node server.js",
     "start-dev": "./node_modules/.bin/concurrently \"nodemon server.js\" \"webpack --watch\""
   },
   "author": "",
